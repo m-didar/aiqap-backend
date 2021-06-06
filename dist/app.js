@@ -16,12 +16,14 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const book_routes_1 = require("./routes/book.routes");
 const mongoose_1 = __importDefault(require("mongoose"));
+require('dotenv').config();
 class App {
     constructor() {
         this.route = new book_routes_1.Routes();
         this.mongoUri = process.env.MONGO_CONNECTION_STRING;
         this.database = mongoose_1.default.connection;
         this.app = express_1.default();
+        this.app.use('/static', express_1.default.static('public'));
         this.config();
         this.route.routes(this.app);
         this.mongoSetup();
@@ -36,8 +38,8 @@ class App {
             useFindAndModify: true,
             useUnifiedTopology: true,
             useCreateIndex: true,
-        }, () => {
-            console.log("could not connect");
+        }, (err) => {
+            console.log(err === null || err === void 0 ? void 0 : err.message);
         });
         this.database.once("open", () => __awaiter(this, void 0, void 0, function* () {
             console.log("Connected to database");
